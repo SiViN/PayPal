@@ -25,20 +25,20 @@ class PayPalExtension extends CompilerExtension {
     Validators::assertField($config, 'secret');
     Validators::assertField($config, 'sdkConfig', 'array');
 
-    $builder->addDefinition($this->prefix('simplePaymentOperationFactory'))
+    $builder->addFactoryDefinition($this->prefix('simplePaymentOperationFactory'))
       ->setImplement('MetisFW\PayPal\Payment\SimplePaymentOperationFactory');
 
-    $builder->addDefinition($this->prefix('plainPaymentOperationFactory'))
+    $builder->addFactoryDefinition($this->prefix('plainPaymentOperationFactory'))
       ->setImplement('MetisFW\PayPal\Payment\PlainPaymentOperationFactory');
 
     $builder->addDefinition($this->prefix('credentials'))
-      ->setClass('PayPal\Auth\OAuthTokenCredential', array($config['clientId'], $config['secret']));
+      ->setFactory('PayPal\Auth\OAuthTokenCredential', array($config['clientId'], $config['secret']));
 
     $builder->addDefinition($this->prefix('apiContext'))
-      ->setClass('PayPal\Rest\ApiContext', array($this->prefix('@credentials')));
+      ->setFactory('PayPal\Rest\ApiContext', array($this->prefix('@credentials')));
 
     $paypal = $builder->addDefinition($this->prefix('PayPal'))
-      ->setClass('MetisFW\PayPal\PayPalContext', array($this->prefix('@apiContext')))
+      ->setFactory('MetisFW\PayPal\PayPalContext', array($this->prefix('@apiContext')))
       ->addSetup('setConfig', array($config['sdkConfig']))
       ->addSetup('setCurrency', array($config['currency']))
       ->addSetup('setGaTrackingEnabled', array($config['gaTrackingEnabled']));
